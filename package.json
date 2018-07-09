@@ -1,5 +1,5 @@
 {
-  "name": "starterbot",
+  "name": "discord-bot-framework",
   "version": "1.0.0",
   "description": "A framework that makes creating Discord bots easier",
   "main": "index.js",
@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/knazir/StarterBot.git"
+    "url": "git+https://github.com/knazir/discord-bot-framework.git"
   },
   "author": "Kashif Nazir (knazir@stanford.edu)",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/knazir/StarterBot/issues"
+    "url": "https://github.com/knazir/discord-bot-framework/issues"
   },
-  "homepage": "https://github.com/knazir/StarterBot#readme",
+  "homepage": "https://github.com/knazir/discord-bot-framework#readme",
   "dependencies": {
     "bufferutil": "^3.0.5",
     "discord.js": "^11.3.2",
