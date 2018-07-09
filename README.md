@@ -1,3 +1,3 @@
-# discord-bot-framework
+# simple-bot-discord
 
-A framework for writing Discord bots built on [Discord.js](https://discord.js.org/).
+A framework that makes writing Discord bots built on [Discord.js](https://discord.js.org/) easier.
