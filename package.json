@@ -1,6 +1,6 @@
 {
   "name": "simple-bot-discord",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A framework that makes creating Discord bots easier",
   "main": "index.js",
   "scripts": {
@@ -17,13 +17,6 @@
   },
   "homepage": "https://github.com/knazir/simple-bot-discord#readme",
   "dependencies": {
-    "bufferutil": "^3.0.5",
-    "discord.js": "^11.3.2",
-    "erlpack": "github:discordapp/erlpack",
-    "libsodium-wrappers": "^0.7.3",
-    "node-opus": "^0.2.9",
-    "opusscript": "0.0.6",
-    "sodium": "^2.0.3",
-    "uws": "^9.148.0"
+    "discord.js": "^11.3.2"
   }
 }
