@@ -17,7 +17,7 @@ module.exports = class MongoDb extends Module {
   }
 
   async start() {
-    this._client = await MongoClient.connect(this._databaseUrl);
+    this._client = await MongoClient.connect(this._databaseUrl, { useNewUrlParser: true });
     this._db = this._client.db(this._databaseName);
 
     this.collections = {};
