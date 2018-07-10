@@ -5,9 +5,10 @@ const { MongoClient, ObjectID } = require("mongodb");
 const { Module } = require("../");
 
 module.exports = class MongoDb extends Module {
-  constructor({ databaseUrl, collections }) {
+  constructor({ databaseUrl, databaseName, collections }) {
     super();
     this._databaseUrl = databaseUrl;
+    this._databaseName = databaseName;
     this._collections = collections || [];
   }
 
@@ -17,11 +18,13 @@ module.exports = class MongoDb extends Module {
 
   async start() {
     this._client = await MongoClient.connect(this._databaseUrl);
+    this._db = this._client.db(this._databaseName);
+
     this.collections = {};
-    this._collections.forEach(collectionName => {
+    this._collections.forEach(async collectionName => {
       let collection = this.getCollection(collectionName);
       if (!collection) {
-        this.createCollection(collectionName);
+        await this.createCollection(collectionName);
         collection = this.getCollection(collectionName);
       }
       this.collections[collectionName] = collection;
@@ -31,27 +34,29 @@ module.exports = class MongoDb extends Module {
 
   //////////////// API ////////////////
 
-  addToCollection(collection, item) {
-    collection = typeof collection === "string" ? this._client.collection(collection) : collection;
+  async addToCollection(collection, item) {
+    collection = typeof collection === "string" ? await this.getCollection(collection) : collection;
     if (!collection) throw new Error(`Collection ${collection} does not exist.`);
-    Array.isArray(item) ? collection.insertMany(item) : collection.insertOne(item);
+    return Array.isArray(item) ? collection.insertMany(item) : collection.insertOne(item);
   }
 
-  deleteFromCollection(collection, item) {
-    collection = typeof collection === "string" ? this._client.collection(collectionName) : collection;
-    if (!collection) throw new Error(`Collection ${collectionName} does not exist.`);
-    Array.isArray(item) ? collection.deleteMany(item) : collection.deleteOne(item);
+  createCollection(name, validator) {
+    return this._db.createCollection(name, validator || {});
   }
 
-  createCollection(name) {
-    this._client.createCollection(name);
+  async deleteFromCollection(collection, item) {
+    collection = typeof collection === "string" ? await this.getCollection(collection) : collection;
+    if (!collection) throw new Error(`Collection ${collection} does not exist.`);
+    return Array.isArray(item) ? collection.deleteMany(item) : collection.deleteOne(item);
   }
 
-  dropDatabase() {
-    this._client.dropDatabase();
+  async findInCollection(collection, item) {
+    collection = typeof collection === "string" ? await this.getCollection(collection) : collection;
+    if (!collection) throw new Error(`Collection ${collection} does not exist.`);
+    return Array.isArray(item) ? (await collection.find(item)).toArray() : collection.findOne(item);
   }
 
   getCollection(name) {
-    return this._client.collection(name);
+    return this._db.collection(name);
   }
 };
