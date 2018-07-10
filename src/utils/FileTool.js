@@ -7,7 +7,9 @@ const { promisify } = require("util");
 module.exports = class FileTool {
   static requireAllFilesFromDirectorySync(dirname) {
     const directoryPath = path.join(dirname);
-    const filenames = fs.readdirSync(directoryPath);
+    const filenames = fs.readdirSync(directoryPath).filter(filename => {
+      return filename.endsWith(".js") && filename !== "index.js";
+    });
     return filenames.map(filename => require(`${directoryPath}/${filename}`));
   }
 

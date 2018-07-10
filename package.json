@@ -1,6 +1,6 @@
 {
   "name": "simple-bot-discord",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "A framework that makes creating Discord bots easier",
   "main": "index.js",
   "scripts": {
@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/knazir/simple-bot-discord#readme",
   "dependencies": {
-    "discord.js": "^11.3.2"
+    "discord.js": "^11.3.2",
+    "mongodb": "^3.1.1"
   }
 }

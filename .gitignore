@@ -2,7 +2,10 @@
 .DS_Store
 
 # IDE
-/.idea
+/.idea/
 
 # Node
 /node_modules/
+
+# Example bot for testing
+/example/

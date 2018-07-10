@@ -30,6 +30,7 @@ module.exports = class Bot {
     // setup data structures for later
     this.channels = {};
     this.commands = {};
+    this.modules = {};
     this.roles = {};
   }
 
@@ -40,12 +41,17 @@ module.exports = class Bot {
     this.commands[key] = new Command(key, handler, options);
   }
 
+  addModule(module) {
+    this.modules[module.getKey()] = module;
+  }
+
   removeCommand(key) {
     delete this.commands[key];
   }
 
-  connect() {
-    this.client.login(this._discordToken);
+  async connect() {
+    await this.client.login(this._discordToken);
+    Object.values(this.modules).forEach(module => module.start());
   }
 
   on(event, handler) {
