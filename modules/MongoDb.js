@@ -26,6 +26,7 @@ module.exports = class MongoDb extends Module {
       }
       this.collections[collectionName] = collection;
     });
+    delete this._collections;
   }
 
   //////////////// API ////////////////
