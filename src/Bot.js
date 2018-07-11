@@ -94,7 +94,10 @@ module.exports = class Bot {
   }
 
   _loadChannels() {
-    Object.entries(this.channels).forEach(([name, id]) => this.channels[name] = this.client.channels.get(id));
+    Object.entries(this.channels).forEach(([name, id]) => {
+      const channel = this.client.channels.get(id);
+      if (channel) this.channels[name] = this.client.channels.get(id)
+    });
   }
 
   async _onMessage(message) {
