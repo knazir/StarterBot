@@ -1,6 +1,6 @@
 "use strict";
 
-const { MongoClient, ObjectID } = require("mongodb");
+const { MongoClient } = require("mongodb");
 
 const { Module } = require("../");
 

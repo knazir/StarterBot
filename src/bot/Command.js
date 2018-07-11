@@ -5,6 +5,9 @@ module.exports = class Command {
     this.key = key;
     this.handler = handler;
     this.options = options || {};
+
+    // bind handlers
+    this.usage = this.usage.bind(this);
   }
 
   help(message) {
@@ -17,8 +20,8 @@ module.exports = class Command {
     message.reply(`\`${Command.prefix}${this.key} ${usage}\``);
   }
 
-  run(message) {
-    this.handler(message, this.usage.bind(this));
+  run(message, bot) {
+    return this.handler(message, bot, this.usage);
   }
 
   authorized(user, roles) {

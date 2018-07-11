@@ -97,15 +97,21 @@ module.exports = class Bot {
     Object.entries(this.channels).forEach(([name, id]) => this.channels[name] = this.client.channels.get(id));
   }
 
-  _onMessage(message) {
+  async _onMessage(message) {
     if (!message.content.startsWith(this._commandPrefix)) return;
     const tokens = message.content.substring(1).split(" ");
     const command = this.commands[tokens[0]];
     if (!command || !command.authorized(message.member, this.roles)) return;
     message.tokens = tokens.slice(1);
-    if (tokens[1] === "help") command.help(message);
-    else if (tokens[1] === "usage") command.usage(message);
-    else command.run(message);
+    if (tokens[1] === "help") {
+      command.help(message);
+    } else if (tokens[1] === "usage") {
+      command.usage(message);
+    } else {
+      Object.values(this.modules).forEach(module => module.commandWillRun(command, message, this));
+      await command.run(message, this);
+      Object.values(this.modules.forEach(module => module.commandFinished(command, message, this)));
+    }
   }
 
   _onReady() {
