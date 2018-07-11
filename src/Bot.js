@@ -110,7 +110,7 @@ module.exports = class Bot {
     } else {
       Object.values(this.modules).forEach(module => module.commandWillRun(command, message, this));
       await command.run(message, this);
-      Object.values(this.modules.forEach(module => module.commandFinished(command, message, this)));
+      Object.values(this.modules).forEach(module => module.commandFinished(command, message, this));
     }
   }
 
