@@ -60,7 +60,9 @@ module.exports = class Command {
     for (const role of adminRoles) {
       if (role.hasRole(user)) return true;
     }
-    if (this.options.requiresRole) {
+    if (this.options.requiresAdmin) {
+      return false; // we just checked if they were admin, so clearly they're not
+    } else if (this.options.requiresRole) {
       return this.options.requiresRole.hasRole(user);
     } else if (this.options.requiredRoles) {
       return this.options.requiredRoles.filter(role => role.hasRole(user)).length === this.options.requiredRoles;
