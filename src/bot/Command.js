@@ -16,7 +16,9 @@ module.exports = class Command {
     if (!key) throw new Error("You must specify a sub command key.");
     else if (!handler) throw new Error("You must specify a sub command handler.");
     else if (this.subCommands[key]) throw new Error(`Command already registered with key ${key}.`);
-    this.subCommands[key] = new Command(key, handler, options, this);
+    const command = new Command(key, handler, options, this);
+    this.subCommands[key] = command;
+    return command;
   }
 
   async run(message, bot) {
