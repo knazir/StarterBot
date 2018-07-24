@@ -38,15 +38,21 @@ module.exports = class Bot {
     if (!key) throw new Error("You must specify a command key.");
     else if (!handler) throw new Error("You must specify a command handler.");
     else if (this.commands[key]) throw new Error(`Command already registered with key ${key}.`);
-    this.commands[key] = new Command(key, handler, options);
+    const command = new Command(key, handler, options);
+    this.commands[key] = command;
+    return command;
   }
 
   addModule(module) {
     this.modules[module.getKey()] = module;
   }
 
-  removeCommand(key) {
-    delete this.commands[key];
+  commandFinished(command, message) {
+    Object.values(this.modules).forEach(module => module.commandFinished(command, message, this));
+  }
+
+  commandWillRun(command, message) {
+    Object.values(this.modules).forEach(module => module.commandWillRun(command, message, this));
   }
 
   async connect() {
@@ -57,10 +63,10 @@ module.exports = class Bot {
   on(event, handler) {
     let eventHandler = handler;
     if (event === Bot.events.ready) {
-     eventHandler = () => {
-       this._onReady();
-       handler();
-     };
+      eventHandler = () => {
+        this._onReady();
+        handler();
+      };
     } else if (event === Bot.events.message) {
       eventHandler = message => {
         this._onMessage(message);
@@ -68,6 +74,10 @@ module.exports = class Bot {
       };
     }
     this.client.on(event, eventHandler);
+  }
+
+  removeCommand(key) {
+    delete this.commands[key];
   }
 
   async restart() {
@@ -104,17 +114,8 @@ module.exports = class Bot {
     if (!message.content.startsWith(this._commandPrefix)) return;
     const tokens = message.content.substring(1).split(" ");
     const command = this.commands[tokens[0]];
-    if (!command || !command.authorized(message.member, this.roles)) return;
     message.tokens = tokens.slice(1);
-    if (tokens[1] === "help") {
-      command.help(message);
-    } else if (tokens[1] === "usage") {
-      command.usage(message);
-    } else {
-      Object.values(this.modules).forEach(module => module.commandWillRun(command, message, this));
-      await command.run(message, this);
-      Object.values(this.modules).forEach(module => module.commandFinished(command, message, this));
-    }
+    if (command) return command.run(message, this);
   }
 
   _onReady() {
