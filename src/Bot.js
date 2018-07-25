@@ -11,13 +11,17 @@ module.exports = class Bot {
     return events;
   }
 
-  constructor({ name, commandPrefix, activityMessage, discordToken }) {
+  constructor({ name, commandPrefix, optionsPrefix, activityMessage, discordToken }) {
     this.name = name;
     this._commandPrefix = Command.prefix = commandPrefix;
+    this._optionsPrefix = optionsPrefix || null;
     this._activityMessage = activityMessage;
     this._discordToken = discordToken;
+
+    // internal setup
     this.client = new Discord.Client();
     this.online = false;
+    this._optionsRegex = new RegExp(`${this._optionsPrefix}[^\\s]+=[^\\s]+`);
 
     // bind handlers
     this._onMessage = this._onMessage.bind(this);
@@ -114,7 +118,16 @@ module.exports = class Bot {
     if (!message.content.startsWith(this._commandPrefix)) return;
     const tokens = message.content.substring(1).split(" ");
     const command = this.commands[tokens[0]];
-    message.tokens = tokens.slice(1);
+    message.tokens = [];
+    message.options = {};
+    tokens.slice(1).forEach(token => {
+      if (this._optionsPrefix && this._optionsRegex.test(token)) {
+        const name = token.substring(this._optionsPrefix.length, token.indexOf("="));
+        message.options[name] = token.substring(token.indexOf("=") + 1);
+      } else {
+        message.tokens.push(token);
+      }
+    });
     if (command) return command.run(message, this);
   }
 

@@ -1,6 +1,6 @@
 {
   "name": "simple-bot-discord",
-  "version": "1.4.2",
+  "version": "1.5.0",
   "description": "A framework that makes creating Discord bots easier",
   "main": "index.js",
   "scripts": {
