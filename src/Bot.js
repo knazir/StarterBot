@@ -21,7 +21,7 @@ module.exports = class Bot {
     // internal setup
     this.client = new Discord.Client();
     this.online = false;
-    this._optionsRegex = new RegExp(`${this._optionsPrefix}[^\\s]+=[^\\s]+`);
+    this._optionsRegex = new RegExp(`${this._optionsPrefix}[^\\s=]+(=[^\\s]+)?`);
 
     // bind handlers
     this._onMessage = this._onMessage.bind(this);
@@ -116,12 +116,23 @@ module.exports = class Bot {
 
   async _onMessage(message) {
     if (!message.content.startsWith(this._commandPrefix)) return;
-    const tokens = message.content.substring(1).split(" ");
-    const command = this.commands[tokens[0]];
-    message.tokens = [];
-    message.options = {};
-    tokens.slice(1).forEach(token => {
+    const rawTokens = message.content.substring(1).split(" ");
+    const command = this.commands[rawTokens[0]];
+    const { tokens, options  } = this._parseMessage(rawTokens.slice(1));
+    message.tokens = tokens;
+    message.options = options;
+    if (command) return command.run(message, this);
+  }
+
+  _parseMessage(rawTokens) {
+    const options = {};
+    const tokens = [];
+    rawTokens.forEach(token => {
       if (this._optionsPrefix && this._optionsRegex.test(token)) {
+        if (token.indexOf("=") === -1) {
+          options[token.substring(this._optionsPrefix.length)] = true;
+          return;
+        }
         const name = token.substring(this._optionsPrefix.length, token.indexOf("="));
         let value = token.substring(token.indexOf("=") + 1);
         try {
@@ -129,12 +140,12 @@ module.exports = class Bot {
         } catch (ignored) {
           // keep value as string
         }
-        message.options[name] = value;
+        options[name] = value;
       } else {
-        message.tokens.push(token);
+        tokens.push(token);
       }
     });
-    if (command) return command.run(message, this);
+    return { tokens, options };
   }
 
   _onReady() {
