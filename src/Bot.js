@@ -123,7 +123,13 @@ module.exports = class Bot {
     tokens.slice(1).forEach(token => {
       if (this._optionsPrefix && this._optionsRegex.test(token)) {
         const name = token.substring(this._optionsPrefix.length, token.indexOf("="));
-        message.options[name] = token.substring(token.indexOf("=") + 1);
+        let value = token.substring(token.indexOf("=") + 1);
+        try {
+          value = JSON.parse(value);
+        } catch (ignored) {
+          // keep value as string
+        }
+        message.options[name] = value;
       } else {
         message.tokens.push(token);
       }
